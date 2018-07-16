@@ -338,24 +338,24 @@ public class MainActivity extends Activity implements View.OnClickListener {
                     break;
                 case 3:
                     Intent intent;
-                    if (remoteControl != null && remoteControl.getRcCommand() != null && remoteControl.gettId() != 7) {//普通设备
-                        intent = new Intent(MainActivity.this, NormalDeviceActivity.class);
-                        try {
-                            intent.putExtra("remoteControl", jsonParser.toJson(remoteControl));
-                            intent.putExtra("rcCommand", jsonParser.toJson(remoteControl.getRcCommand()));
-                        } catch (JSONException e) {
-                            Log.e(TAG, "JSONException:" + e.getMessage());
-                        }
-                        startActivity(intent);
-                    } else if (remoteControl != null && remoteControl.getRcCommand() != null && remoteControl.gettId() == 7) {//空调设备
-                        intent = new Intent(MainActivity.this, AirDeviceActivity.class);
-                        try {
-                            intent.putExtra("remoteControl", jsonParser.toJson(remoteControl));
-                        } catch (JSONException e) {
-                            Log.e(TAG, "JSONException:" + e.getMessage());
-                        }
-                        startActivity(intent);
-                    }
+        if (remoteControl != null && remoteControl.getRcCommand() != null && remoteControl.gettId() != 7) {//普通设备
+            intent = new Intent(MainActivity.this, NormalDeviceActivity.class);
+            try {
+                intent.putExtra("remoteControl", jsonParser.toJson(remoteControl));
+                intent.putExtra("rcCommand", jsonParser.toJson(remoteControl.getRcCommand()));
+            } catch (JSONException e) {
+                Log.e(TAG, "JSONException:" + e.getMessage());
+            }
+            startActivity(intent);
+        } else if (remoteControl != null && remoteControl.getRcCommand() != null && remoteControl.gettId() == 7) {//空调设备
+            intent = new Intent(MainActivity.this, AirDeviceActivity.class);
+            try {
+                intent.putExtra("remoteControl", jsonParser.toJson(remoteControl));
+            } catch (JSONException e) {
+                Log.e(TAG, "JSONException:" + e.getMessage());
+            }
+            startActivity(intent);
+        }
                     break;
                 default:
                     break;

@@ -61,7 +61,6 @@ public class AirDeviceActivity extends AppCompatActivity implements View.OnClick
             codeDatas = remoteControl.getRcCommand();
             airEvent = getAirEvent(codeDatas);
         }
-
     }
 
     private void initView() {
