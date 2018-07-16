@@ -101,3 +101,33 @@
             Log.e(TAG, "ykError:" + ykError.toString());
         }
     });
+
+## 1.6 获取遥控器码库
+
+根据遥控器tid判断是否为空调设备 
+    
+        if (remoteControl != null && remoteControl.getRcCommand() != null && remoteControl.gettId() != 7) {//普通设备
+            intent = new Intent(MainActivity.this, NormalDeviceActivity.class);
+            try {
+                intent.putExtra("remoteControl", jsonParser.toJson(remoteControl));
+                intent.putExtra("rcCommand", jsonParser.toJson(remoteControl.getRcCommand()));
+            } catch (JSONException e) {
+                Log.e(TAG, "JSONException:" + e.getMessage());
+            }
+            startActivity(intent);
+        } else if (remoteControl != null && remoteControl.getRcCommand() != null && remoteControl.gettId() == 7) {//空调设备
+            intent = new Intent(MainActivity.this, AirDeviceActivity.class);
+            try {
+                intent.putExtra("remoteControl", jsonParser.toJson(remoteControl));
+            } catch (JSONException e) {
+                Log.e(TAG, "JSONException:" + e.getMessage());
+            }
+            startActivity(intent);
+        }
+        
+每个遥控器对象里面都有RcCommand这个属性，取得之后用JsonParser解析就能得到遥控器里所有的码值。
+
+    Type type = new TypeToken<HashMap<String, KeyCode>>(){}.getType();
+    //解析数据
+    HashMap<String, KeyCode> codeDatas = new JsonParser().parseObjecta(rcCommand, type);
+    
