@@ -17,5 +17,6 @@
         </activity>
         <activity android:name=".NormalDeviceActivity" />
         <activity android:name=".AirDeviceActivity"></activity>
+        <activity android:name=".OneKeyMatchActivity"></activity>
     </application>
 </manifest>

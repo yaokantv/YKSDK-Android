@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">YKSDK</string>
+    <string name="power_off">关机</string>
+    <string name="power_on">开机</string>
+    <string name="sweep_on">扫风开</string>
+    <string name="sweep_off">扫风关</string>
 </resources>

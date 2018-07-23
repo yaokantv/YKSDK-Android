@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.util.Base64;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
@@ -29,6 +30,7 @@ import com.yaokantv.api.model.MatchRemoteControl;
 import com.yaokantv.api.model.MatchRemoteControlResult;
 import com.yaokantv.api.model.RemoteControl;
 import com.yaokantv.api.model.YKError;
+import com.yaokantv.yksdk.ProgressDialogUtils;
 
 import org.json.JSONException;
 
@@ -36,6 +38,10 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+
+import javax.crypto.Cipher;
+import javax.crypto.spec.IvParameterSpec;
+import javax.crypto.spec.SecretKeySpec;
 
 public class MainActivity extends Activity implements View.OnClickListener {
 
@@ -93,6 +99,26 @@ public class MainActivity extends Activity implements View.OnClickListener {
                 });
             }
         }).start();
+        String s = aesEncryptPS("MF%8fLZ%");
+        Log.e(TAG, s);
+    }
+
+
+    static String psKey = "cjI4OXIyMGRmMjNy";
+    static String psIv = "ThmZXcwZGYyM3JnM";
+
+    public static String aesEncryptPS(String data) {
+        byte[] byteCipherText = null;
+        try {
+            SecretKeySpec secKey = new SecretKeySpec(psKey.getBytes(), "AES");
+            Cipher aesCipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
+            aesCipher.init(Cipher.ENCRYPT_MODE, secKey, new IvParameterSpec(psIv.getBytes()));
+            byte[] content = data.getBytes("UTF-8");
+            byteCipherText = aesCipher.doFinal(content);
+            return new String(Base64.encode(byteCipherText, Base64.DEFAULT), "UTF-8").replaceAll("[\\s*\t\n\r]", "");
+        } catch (Exception e) {
+        }
+        return null;
     }
 
     private void initView() {
@@ -101,7 +127,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
         spType = findViewById(R.id.spType);
         spBrands = findViewById(R.id.spBrand);
         spRemotes = findViewById(R.id.spData);
-
+        findViewById(R.id.one_key_match);
         typeAdapter = new ArrayAdapter<>(this,
                 android.R.layout.simple_spinner_item, nameType);
         brandAdapter = new ArrayAdapter<>(this,
@@ -162,6 +188,9 @@ public class MainActivity extends Activity implements View.OnClickListener {
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
+            case R.id.one_key_match:
+                startActivity(new Intent(MainActivity.this, OneKeyMatchActivity.class));
+                break;
             case R.id.match:
                 if (currRemoteControl != null) {
                     if (currRemoteControl.getRcCommand() != null && currRemoteControl.getRcCommand().size() > 0) {
@@ -303,7 +332,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
 
     JsonParser jsonParser = new JsonParser();
     private Handler mHandler = new Handler() {
-        public void handleMessage(Message msg) {
+        public void handleMessage(android.os.Message msg) {
             switch (msg.what) {
                 case 0:
                     if (deviceType != null) {
@@ -338,24 +367,24 @@ public class MainActivity extends Activity implements View.OnClickListener {
                     break;
                 case 3:
                     Intent intent;
-        if (remoteControl != null && remoteControl.getRcCommand() != null && remoteControl.gettId() != 7) {//普通设备
-            intent = new Intent(MainActivity.this, NormalDeviceActivity.class);
-            try {
-                intent.putExtra("remoteControl", jsonParser.toJson(remoteControl));
-                intent.putExtra("rcCommand", jsonParser.toJson(remoteControl.getRcCommand()));
-            } catch (JSONException e) {
-                Log.e(TAG, "JSONException:" + e.getMessage());
-            }
-            startActivity(intent);
-        } else if (remoteControl != null && remoteControl.getRcCommand() != null && remoteControl.gettId() == 7) {//空调设备
-            intent = new Intent(MainActivity.this, AirDeviceActivity.class);
-            try {
-                intent.putExtra("remoteControl", jsonParser.toJson(remoteControl));
-            } catch (JSONException e) {
-                Log.e(TAG, "JSONException:" + e.getMessage());
-            }
-            startActivity(intent);
-        }
+                    if (remoteControl != null && remoteControl.getRcCommand() != null && remoteControl.gettId() != 7) {//普通设备
+                        intent = new Intent(MainActivity.this, NormalDeviceActivity.class);
+                        try {
+                            intent.putExtra("remoteControl", jsonParser.toJson(remoteControl));
+                            intent.putExtra("rcCommand", jsonParser.toJson(remoteControl.getRcCommand()));
+                        } catch (JSONException e) {
+                            Log.e(TAG, "JSONException:" + e.getMessage());
+                        }
+                        startActivity(intent);
+                    } else if (remoteControl != null && remoteControl.getRcCommand() != null && remoteControl.gettId() == 7) {//空调设备
+                        intent = new Intent(MainActivity.this, AirDeviceActivity.class);
+                        try {
+                            intent.putExtra("remoteControl", jsonParser.toJson(remoteControl));
+                        } catch (JSONException e) {
+                            Log.e(TAG, "JSONException:" + e.getMessage());
+                        }
+                        startActivity(intent);
+                    }
                     break;
                 default:
                     break;
