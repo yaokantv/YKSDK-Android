@@ -99,26 +99,6 @@ public class MainActivity extends Activity implements View.OnClickListener {
                 });
             }
         }).start();
-        String s = aesEncryptPS("MF%8fLZ%");
-        Log.e(TAG, s);
-    }
-
-
-    static String psKey = "cjI4OXIyMGRmMjNy";
-    static String psIv = "ThmZXcwZGYyM3JnM";
-
-    public static String aesEncryptPS(String data) {
-        byte[] byteCipherText = null;
-        try {
-            SecretKeySpec secKey = new SecretKeySpec(psKey.getBytes(), "AES");
-            Cipher aesCipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
-            aesCipher.init(Cipher.ENCRYPT_MODE, secKey, new IvParameterSpec(psIv.getBytes()));
-            byte[] content = data.getBytes("UTF-8");
-            byteCipherText = aesCipher.doFinal(content);
-            return new String(Base64.encode(byteCipherText, Base64.DEFAULT), "UTF-8").replaceAll("[\\s*\t\n\r]", "");
-        } catch (Exception e) {
-        }
-        return null;
     }
 
     private void initView() {

@@ -1,3 +1,15 @@
+#一、集成SDK
+
+1.将SDK拷贝到libs目录下后，在工程里的app→src→build.gradle 根目录添加以下代码
+    repositories{  
+        flatDir {        
+        dirs 'libs'       
+       }  
+    }
+2. 工程里的app→src→build.gradle 的根目录的 dependencies 标签里面添加
+    implementation(name:’yksdk',   ext:'aar')
+    implementation 'com.google.code.gson:gson:2.8.2'
+
 ## 1.1 初始化YKSDK
     // 初始化SDK
     YkanIRInterfaceImpl ykanInterface = new YkanIRInterfaceImpl(getApplicationContext());
