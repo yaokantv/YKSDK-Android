@@ -243,14 +243,15 @@
     
 回调有四种情况，我们逐一分析。
     
-    当回调成功时
-    1.如果结果属于OneKeyMatchKey时，则说明要继续匹配下一个键，键值包含在对象里，将全局对象key替换后，重复step2操作。
+当回调成功时
+
+1.如果结果属于OneKeyMatchKey时，则说明要继续匹配下一个键，键值包含在对象里，将全局对象key替换后，重复step2操作。
 (这里返回的key为英文，[需要翻译成中文的请戳这里](https://github.com/yaokantv/YKCenterSDKExample_for_AS/wiki/%E9%81%A5%E6%8E%A7%E5%99%A8%E5%AF%B9%E5%BA%94%E9%94%AE%E5%90%8D))
 
-    2.如果结果属于RemoteControl时，则说明匹配成功，这时你只需要把匹配成功的遥控器保存下来就可以了
+2.如果结果属于RemoteControl时，则说明匹配成功，这时你只需要把匹配成功的遥控器保存下来就可以了
     
-    3.如果结果属于MatchRemoteControlResult时，则说明匹配回来的是空调遥控器数组(一般匹配空调都会以数组的形式返回)，数组里面包含遥控器的几个按键，这时你可以用来测试实体家电，测试成功之后再下载完整的遥控器数据。
+3.如果结果属于MatchRemoteControlResult时，则说明匹配回来的是空调遥控器数组(一般匹配空调都会以数组的形式返回)，数组里面包含遥控器的几个按键，这时你可以用来测试实体家电，测试成功之后再下载完整的遥控器数据。
 如下图所示![image](https://github.com/yaokantv/YKCenterSDKExample_for_AS/blob/master/app/img/one_key.png)
 
-    4.除以上3中情况，其他情况均为匹配失败。
+4.除以上3中情况，其他情况均为匹配失败。
 
