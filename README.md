@@ -1,6 +1,6 @@
 # 一、集成SDK
 
-1.将yksdk.arr拷贝到libs目录下后，在工程里的app→src→build.gradle 根目录添加以下代码
+1.将yksdk.aar拷贝到libs目录下后，在工程里的app→src→build.gradle 根目录添加以下代码
 
     repositories{  
         flatDir {        
