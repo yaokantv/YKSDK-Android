@@ -16,14 +16,14 @@ import android.widget.TextView;
 import com.yaokantv.api.YKanHttpListener;
 import com.yaokantv.api.YkanIRInterface;
 import com.yaokantv.api.YkanIRInterfaceImpl;
-import com.yaokantv.api.model.BaseResult;
-import com.yaokantv.api.model.DeviceType;
-import com.yaokantv.api.model.KeyCode;
-import com.yaokantv.api.model.MatchRemoteControl;
-import com.yaokantv.api.model.MatchRemoteControlResult;
-import com.yaokantv.api.model.OneKeyMatchKey;
-import com.yaokantv.api.model.RemoteControl;
-import com.yaokantv.api.model.YKError;
+import com.yaokantv.model.BaseResult;
+import com.yaokantv.model.DeviceType;
+import com.yaokantv.model.KeyCode;
+import com.yaokantv.model.MatchRemoteControl;
+import com.yaokantv.model.MatchRemoteControlResult;
+import com.yaokantv.model.OneKeyMatchKey;
+import com.yaokantv.model.RemoteControl;
+import com.yaokantv.model.YKError;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -49,7 +49,7 @@ public class OneKeyMatchActivity extends Activity implements View.OnClickListene
             initView();
             dialogUtils = new ProgressDialogUtils(this);
             // 遥控云数据接口分装对象对象
-            ykanInterface = new YkanIRInterfaceImpl(getApplicationContext());
+            ykanInterface = new YkanIRInterfaceImpl();
         }
         tid = Integer.valueOf(AIR_TID);
     }

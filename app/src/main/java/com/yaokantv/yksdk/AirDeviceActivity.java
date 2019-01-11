@@ -1,26 +1,25 @@
 package com.yaokantv.yksdk;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
-import com.yaokantv.api.JsonParser;
 import com.yaokantv.api.Utility;
-import com.yaokantv.api.model.AirConCatogery;
-import com.yaokantv.api.model.AirEvent;
-import com.yaokantv.api.model.AirStatus;
-import com.yaokantv.api.model.AirV1Command;
-import com.yaokantv.api.model.AirV3Command;
-import com.yaokantv.api.model.KeyCode;
-import com.yaokantv.api.model.RemoteControl;
-import com.yaokantv.api.model.kyenum.Mode;
-import com.yaokantv.api.model.kyenum.Speed;
-import com.yaokantv.api.model.kyenum.Temp;
-import com.yaokantv.api.model.kyenum.WindH;
-import com.yaokantv.api.model.kyenum.WindV;
+import com.yaokantv.model.AirConCatogery;
+import com.yaokantv.model.AirStatus;
+import com.yaokantv.model.AirV3Command;
+import com.yaokantv.model.KeyCode;
+import com.yaokantv.model.RemoteControl;
+import com.yaokantv.model.kyenum.AirV3KeyMode;
+import com.yaokantv.model.kyenum.Mode;
+import com.yaokantv.model.kyenum.Speed;
+import com.yaokantv.model.kyenum.Temp;
+import com.yaokantv.model.kyenum.WindH;
+import com.yaokantv.model.kyenum.WindV;
 
 import java.util.HashMap;
 
@@ -30,15 +29,13 @@ public class AirDeviceActivity extends AppCompatActivity implements View.OnClick
 
     private HashMap<String, KeyCode> codeDatas = new HashMap<>();
 
-    private JsonParser jsonParser = new JsonParser();
-
     private Button mode_btn, wspeed_btn, tbspeed_btn, lrwspped_btn, power_btn, temp_add_btn, temp_rdc_btn;
 
     private static final int V3 = 3;
 
     private int airVerSion = V3;
 
-    private AirEvent airEvent = null;
+    private AirV3Command airEvent = null;
 
 
     @Override
@@ -54,13 +51,13 @@ public class AirDeviceActivity extends AppCompatActivity implements View.OnClick
     private RemoteControl remoteControl;
 
     private void initDevice() {
-        Intent intent = getIntent();
-        remoteControl = jsonParser.parseObjecta(intent.getStringExtra("remoteControl"), RemoteControl.class);
+        remoteControl = DataHolder.getInstance().getExtra();
         if (!Utility.isEmpty(remoteControl)) {
             airVerSion = remoteControl.getVersion();
             codeDatas = remoteControl.getRcCommand();
             airEvent = getAirEvent(codeDatas);
         }
+        Log.e("aaaa", remoteControl.getJson());
     }
 
     private void initView() {
@@ -103,14 +100,10 @@ public class AirDeviceActivity extends AppCompatActivity implements View.OnClick
         temp_rdc_btn.setOnClickListener(this);
     }
 
-    private AirEvent getAirEvent(HashMap<String, KeyCode> codeDatas) {
-        AirEvent airEvent = null;
+    private AirV3Command getAirEvent(HashMap<String, KeyCode> codeDatas) {
+        AirV3Command airEvent = null;
         if (!Utility.isEmpty(codeDatas)) {
-            if (airVerSion == V3) {
-                airEvent = new AirV3Command(codeDatas);
-            } else {
-                airEvent = new AirV1Command(codeDatas);
-            }
+            airEvent = new AirV3Command(codeDatas);
         }
         return airEvent;
     }
@@ -153,6 +146,7 @@ public class AirDeviceActivity extends AppCompatActivity implements View.OnClick
                 break;
         }
         if (!Utility.isEmpty(mKeyCode)) {
+            Log.i("key: ", mKeyCode.getSrcCode());
             onRefreshUI(airEvent.getCurrStatus());
         }
     }
@@ -172,18 +166,64 @@ public class AirDeviceActivity extends AppCompatActivity implements View.OnClick
 
     //
     private String getContent(AirStatus airStatus) {
-        String content = "";
-        if (airVerSion == 1) {
-            content = "模式：" + airStatus.getMode().getChName()
-                    + "\n温度：" + airStatus.getTemp().getChName();
-        } else {
-            content = "模式：" + airStatus.getMode().getChName()
-                    + "\n风量：" + airStatus.getSpeed().getChName()
-                    + "\n左右扫风：" + airStatus.getWindLeft().getChName()
-                    + "\n上下扫风：" + airStatus.getWindUp().getChName()
-                    + "\n温度：" + airStatus.getTemp().getChName();
+        String mode = airStatus.getMode().getName();
+        String temp = "";
+        if (!TextUtils.isEmpty(mode) && airEvent != null) {
+            AirV3KeyMode keyMode = null;
+            switch (mode) {
+                case "r":
+                    keyMode = airEvent.getrMode();
+                    break;
+                case "h":
+                    keyMode = airEvent.gethMode();
+                    break;
+                case "d":
+                    keyMode = airEvent.getdMode();
+                    break;
+                case "w":
+                    keyMode = airEvent.getwMode();
+                    break;
+                case "a":
+                    keyMode = airEvent.getaMode();
+                    break;
+            }
+            if (keyMode != null) {
+                if (keyMode.isSpeed()) {
+                    setBtnStatus(wspeed_btn, true);
+                } else {
+                    setBtnStatus(wspeed_btn, false);
+                }
+                if (keyMode.isU()) {
+                    setBtnStatus(tbspeed_btn, true);
+                } else {
+                    setBtnStatus(tbspeed_btn, false);
+                }
+                if (keyMode.isL()) {
+                    setBtnStatus(lrwspped_btn, true);
+                } else {
+                    setBtnStatus(lrwspped_btn, false);
+                }
+                if (keyMode.isTemp()) {
+                    setBtnStatus(temp_add_btn, true);
+                    setBtnStatus(temp_rdc_btn, true);
+                } else {
+                    temp = "--";
+                    setBtnStatus(temp_add_btn, false);
+                    setBtnStatus(temp_rdc_btn, false);
+                }
+            }
         }
+        String content;
+        content = "模式：" + airStatus.getMode().getChName()
+                + "\n风量：" + airStatus.getSpeed().getChName()
+                + "\n左右扫风：" + airStatus.getWindLeft().getChName()
+                + "\n上下扫风：" + airStatus.getWindUp().getChName()
+                + "\n温度：" + (TextUtils.isEmpty(temp) ? airStatus.getTemp().getChName() : temp);
         return content;
+    }
 
+    void setBtnStatus(TextView textView, boolean status) {
+        textView.setEnabled(status);
+        textView.setTextColor(status ? getResources().getColor(android.R.color.white) : getResources().getColor(android.R.color.black));
     }
 }

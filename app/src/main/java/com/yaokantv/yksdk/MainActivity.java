@@ -7,7 +7,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.util.Base64;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
@@ -15,33 +14,28 @@ import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 import android.widget.Toast;
 
-import com.yaokantv.api.JsonParser;
+import com.google.gson.Gson;
 import com.yaokantv.api.Utility;
 import com.yaokantv.api.YKanHttpListener;
 import com.yaokantv.api.YkanIRInterface;
 import com.yaokantv.api.YkanIRInterfaceImpl;
-import com.yaokantv.api.model.BaseResult;
-import com.yaokantv.api.model.Brand;
-import com.yaokantv.api.model.BrandResult;
-import com.yaokantv.api.model.DeviceType;
-import com.yaokantv.api.model.DeviceTypeResult;
-import com.yaokantv.api.model.KeyCode;
-import com.yaokantv.api.model.MatchRemoteControl;
-import com.yaokantv.api.model.MatchRemoteControlResult;
-import com.yaokantv.api.model.RemoteControl;
-import com.yaokantv.api.model.YKError;
-import com.yaokantv.yksdk.ProgressDialogUtils;
+import com.yaokantv.model.BaseResult;
+import com.yaokantv.model.Brand;
+import com.yaokantv.model.BrandResult;
+import com.yaokantv.model.DeviceType;
+import com.yaokantv.model.DeviceTypeResult;
+import com.yaokantv.model.KeyCode;
+import com.yaokantv.model.MatchRemoteControl;
+import com.yaokantv.model.MatchRemoteControlResult;
+import com.yaokantv.model.RemoteControl;
+import com.yaokantv.model.YKError;
 
-import org.json.JSONException;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import javax.crypto.Cipher;
-import javax.crypto.spec.IvParameterSpec;
-import javax.crypto.spec.SecretKeySpec;
 
 public class MainActivity extends Activity implements View.OnClickListener {
 
@@ -78,9 +72,11 @@ public class MainActivity extends Activity implements View.OnClickListener {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_main);
+        initView();
         // 遥控云数据接口分装对象对象
-        ykanInterface = new YkanIRInterfaceImpl(getApplicationContext());
+        ykanInterface = new YkanIRInterfaceImpl();
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -91,7 +87,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
                     public void run() {
                         if (b) {
                             Toast.makeText(MainActivity.this, "初始化成功！！！", Toast.LENGTH_SHORT).show();
-                            initView();
+
                         } else {
                             Toast.makeText(MainActivity.this, "初始化失败！！！", Toast.LENGTH_SHORT).show();
                         }
@@ -102,8 +98,8 @@ public class MainActivity extends Activity implements View.OnClickListener {
     }
 
     private void initView() {
-        dialogUtils = new ProgressDialogUtils(this);
 
+        dialogUtils = new ProgressDialogUtils(this);
         spType = findViewById(R.id.spType);
         spBrands = findViewById(R.id.spBrand);
         spRemotes = findViewById(R.id.spData);
@@ -310,7 +306,6 @@ public class MainActivity extends Activity implements View.OnClickListener {
         }
     }
 
-    JsonParser jsonParser = new JsonParser();
     private Handler mHandler = new Handler() {
         public void handleMessage(android.os.Message msg) {
             switch (msg.what) {
@@ -349,20 +344,12 @@ public class MainActivity extends Activity implements View.OnClickListener {
                     Intent intent;
                     if (remoteControl != null && remoteControl.getRcCommand() != null && remoteControl.gettId() != 7) {//普通设备
                         intent = new Intent(MainActivity.this, NormalDeviceActivity.class);
-                        try {
-                            intent.putExtra("remoteControl", jsonParser.toJson(remoteControl));
-                            intent.putExtra("rcCommand", jsonParser.toJson(remoteControl.getRcCommand()));
-                        } catch (JSONException e) {
-                            Log.e(TAG, "JSONException:" + e.getMessage());
-                        }
+                        intent.putExtra("remoteControl", new Gson().toJson(remoteControl));
+                        intent.putExtra("rcCommand", new Gson().toJson(remoteControl.getRcCommand()));
                         startActivity(intent);
                     } else if (remoteControl != null && remoteControl.getRcCommand() != null && remoteControl.gettId() == 7) {//空调设备
                         intent = new Intent(MainActivity.this, AirDeviceActivity.class);
-                        try {
-                            intent.putExtra("remoteControl", jsonParser.toJson(remoteControl));
-                        } catch (JSONException e) {
-                            Log.e(TAG, "JSONException:" + e.getMessage());
-                        }
+                        DataHolder.getInstance().putExtra(remoteControl);
                         startActivity(intent);
                     }
                     break;

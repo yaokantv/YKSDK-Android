@@ -13,10 +13,10 @@ import android.widget.BaseAdapter;
 import android.widget.GridView;
 import android.widget.TextView;
 
+import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import com.yaokantv.api.JsonParser;
-import com.yaokantv.api.model.KeyCode;
-import com.yaokantv.api.model.RemoteControl;
+import com.yaokantv.model.KeyCode;
+import com.yaokantv.model.RemoteControl;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -28,7 +28,6 @@ public class NormalDeviceActivity extends AppCompatActivity {
     private GridView gridView;
     private HashMap<String, KeyCode> codeDatas = new HashMap<String, KeyCode>();
     private List<String> codeKeys = new ArrayList<String>();
-    JsonParser jsonParser = new JsonParser();
     private String rcCommand = "";
     RemoteControl control;
 
@@ -38,7 +37,7 @@ public class NormalDeviceActivity extends AppCompatActivity {
         setContentView(R.layout.activity_normal_device);
         Intent intent = getIntent();
         rcCommand = intent.getStringExtra("rcCommand");
-        control = new JsonParser().parseObjecta(intent.getStringExtra("remoteControl"), RemoteControl.class);
+        control = new Gson().fromJson(intent.getStringExtra("remoteControl"), RemoteControl.class);
 
         initView();
 
@@ -50,7 +49,7 @@ public class NormalDeviceActivity extends AppCompatActivity {
         Type type = new TypeToken<HashMap<String, KeyCode>>() {
         }.getType();
         //解析数据
-        codeDatas = jsonParser.parseObjecta(rcCommand, type);
+        codeDatas = new Gson().fromJson(rcCommand, type);
         codeKeys = new ArrayList<>(codeDatas.keySet());
         ExpandAdapter expandAdapter = new ExpandAdapter(getApplicationContext(), codeKeys);
         gridView.setAdapter(expandAdapter);
