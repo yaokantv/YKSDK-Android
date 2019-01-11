@@ -26,7 +26,7 @@
         @Override
         protected void attachBaseContext(Context base) {
             super.attachBaseContext(base);
-            com.jiagu.sdk.yksdkProtected.install(this);
+            //com.jiagu.sdk.yksdkProtected.install(this);
         }
     }
 
